@@ -51,6 +51,7 @@ public class Meli {
     
     private String accessToken;
     private String refreshToken;
+    private Long timeOut = 0L;
     private Long clientId;
     private String clientSecret;
     private AsyncHttpClient http;
@@ -86,6 +87,10 @@ public class Meli {
     public String getRefreshToken() {
     	return this.refreshToken;
     }
+    
+    public Long getTimeOut() {
+		return timeOut;
+	}
 
     public Response get(String path) throws MeliException {
     	return get(path, new FluentStringsMap());
@@ -168,6 +173,18 @@ public class Meli {
 		parseToken(req);
     }
 
+	public String getAuthUrl(String callback) {
+		try {
+			return "https://auth.mercadolibre.com.ar/authorization?response_type=code&client_id="
+					+ clientId
+					+ "&redirect_uri="
+					+ URLEncoder.encode(callback, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return "https://auth.mercadolibre.com.ar/authorization?response_type=code&client_id="
+					+ clientId + "&redirect_uri=" + callback;
+		}
+	}
+    
     /**
      * 
      * @param callback: The callback URL. Must be the applications redirect URI 
@@ -186,8 +203,7 @@ public class Meli {
 		}
     }
 
-	public void authorize(String code, String redirectUri)
-			throws AuthorizationFailure {
+	public Long authorize(String code, String redirectUri) throws AuthorizationFailure {
 		FluentStringsMap params = new FluentStringsMap();
 
 		params.add("grant_type", "authorization_code");
@@ -199,7 +215,22 @@ public class Meli {
 		BoundRequestBuilder r = preparePost("/oauth/token", params);
 
 		parseToken(r);
-    }
+		return this.timeOut;
+	}
+	
+	protected Long authorize_refreshtoken() throws AuthorizationFailure {
+		FluentStringsMap params = new FluentStringsMap();
+		
+		params.add("grant_type", "refresh_token");
+		params.add("refresh_token", refreshToken);
+		params.add("client_id", String.valueOf(clientId));
+		params.add("client_secret", clientSecret);
+		
+		BoundRequestBuilder r = preparePost("/oauth/token", params);
+		
+		parseToken(r);
+		return this.timeOut;
+	}
 
     private void parseToken(BoundRequestBuilder r) throws AuthorizationFailure {
 		Response response = null;
