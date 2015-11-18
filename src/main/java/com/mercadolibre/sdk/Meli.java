@@ -258,6 +258,8 @@ public class Meli {
 		if (response.getStatusCode() == 200) {
 
 			this.accessToken = object.get("access_token").getAsString();
+			this.timeOut = object.get("expires_in").getAsLong();
+			this.timeOut = (this.timeOut - (20 * 60) < 0) ? this.timeOut : (this.timeOut - (20*60));
 			JsonElement jsonElement = object.get("refresh_token");
 			this.refreshToken = jsonElement != null ? object.get(
 					"refresh_token").getAsString() : null;
