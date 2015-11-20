@@ -91,6 +91,18 @@ public class Meli {
     public Long getTimeOut() {
 		return timeOut;
 	}
+    
+    protected void setTimeOut(long timeOut) {
+    	this.timeOut = timeOut;
+    }
+    
+    protected void setAccessToken(String accessToken) {
+    	this.accessToken = accessToken;
+    }
+    
+    protected void setRefreshToken(String refreshToken) {
+    	this.refreshToken = refreshToken;
+    }
 
     public Response get(String path) throws MeliException {
     	return get(path, new FluentStringsMap());
