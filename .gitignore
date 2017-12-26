@@ -2,3 +2,10 @@
 /.settings/
 .classpath
 mockapi
+
+*.class
+
+.idea/
+*.iml
+
+bin/
